@@ -1,0 +1,19 @@
+import os
+import sys
+
+
+project_home = "/home/YOUR_USERNAME/HTML-Workout"
+server_path = f"{project_home}/server"
+if server_path not in sys.path:
+    sys.path.insert(0, server_path)
+
+os.environ["ADMIN_EMAIL"] = "hemanathanarish0@gmail.com"
+os.environ["ADMIN_PASSWORD"] = "REPLACE_WITH_A_PRIVATE_PASSWORD_OF_AT_LEAST_10_CHARACTERS"
+os.environ["SECRET_KEY"] = "REPLACE_WITH_A_PRIVATE_RANDOM_SECRET"
+os.environ["DATABASE_PATH"] = "/home/YOUR_USERNAME/attendance.sqlite3"
+os.environ["FRONTEND_DIST"] = f"{project_home}/frontend/dist"
+os.environ["COOKIE_SECURE"] = "true"
+
+from app import create_app
+
+application = create_app()

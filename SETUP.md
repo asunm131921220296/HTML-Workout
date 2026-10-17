@@ -74,9 +74,54 @@ From `frontend/`:
 npm run build
 ```
 
-## Deploy publicly on Render
+## Free public deployment on PythonAnywhere
 
-This repository includes a Render Blueprint in `render.yaml` and a production [`Dockerfile`](./Dockerfile). It deploys the React build and Flask API together as one HTTPS web service, configures a persistent disk for SQLite, and generates a secret session key. **The persistent disk requires the paid Render Starter web-service plan.** Check the current price in Render before creating the service.
+PythonAnywhere currently offers a limited free Beginner account with **one public web app** at `YOUR_USERNAME.pythonanywhere.com`. Its free account has usage limits and restricted outbound internet access; this small app uses a local SQLite file and does not require outbound API calls. Review the [current free-account details and limits](https://www.pythonanywhere.com/pricing/) before signing up. Home-directory files persist between web-app reloads, but keep your own database backup.
+
+The repository includes the prebuilt React files under `frontend/dist/`, so the host does not need Node.js or npm. After rebuilding the frontend, commit the updated `frontend/dist/` files as well.
+
+1. Create a [PythonAnywhere Beginner account](https://www.pythonanywhere.com/registration/register/beginner/), then open its **Consoles** tab and start a **Bash** console.
+2. Clone the public project and install the Flask dependencies:
+
+   ```bash
+   git clone https://github.com/asunm131921220296/HTML-Workout.git
+   cd HTML-Workout
+   python3.13 -m venv .venv
+   .venv/bin/pip install -r server/requirements.txt
+   ```
+
+3. Open the **Web** tab, choose **Add a new web app → Manual configuration**, and select Python 3.13. Do not choose the Flask quickstart: this repository already has its own Flask application.
+4. In the web app's **Virtualenv** field, enter:
+
+   ```text
+   /home/YOUR_USERNAME/HTML-Workout/.venv
+   ```
+
+5. Click the WSGI configuration-file link in the Web tab. Replace its contents with `server/pythonanywhere_wsgi.py.example` and edit every `YOUR_USERNAME` occurrence to your PythonAnywhere username.
+6. In that WSGI file on PythonAnywhere (not in the GitHub repository), replace `ADMIN_PASSWORD` with a strong, private password of at least 10 characters. Generate a separate `SECRET_KEY` in the Bash console with:
+
+   ```bash
+   python3.13 -c "import secrets; print(secrets.token_hex(32))"
+   ```
+
+   Copy the generated value into the WSGI file's `SECRET_KEY` setting. Never commit the edited WSGI file or share the password/secret.
+7. Back on the Web tab, click **Reload**, then open `https://YOUR_USERNAME.pythonanywhere.com`. Sign in as `hemanathanarish0@gmail.com` with the admin password you just configured.
+
+The SQLite file is stored at `/home/YOUR_USERNAME/attendance.sqlite3`, outside the cloned repository. This is a free, limited hosting plan rather than a production guarantee; keep regular database backups. The deployment starts a fresh database and does not import your computer's local attendance history.
+
+To update after pushing code to GitHub, use the Bash console:
+
+```bash
+cd ~/HTML-Workout
+git pull
+.venv/bin/pip install -r server/requirements.txt
+```
+
+Then click **Reload** on the PythonAnywhere Web tab. If the React UI changed, ensure the rebuilt `frontend/dist/` files are included in the GitHub commit before pulling.
+
+## Paid alternative: Render
+
+This repository also includes a Render Blueprint in `render.yaml` and a production [`Dockerfile`](./Dockerfile). It deploys the React build and Flask API together as one HTTPS web service, configures a persistent disk for SQLite, and generates a secret session key. **The persistent disk requires the paid Render Starter web-service plan.** Check the current price in Render before creating the service.
 
 1. Push this project to a GitHub repository that your Render account can access.
 2. Sign in to [Render](https://dashboard.render.com/) and choose **New → Blueprint**.
