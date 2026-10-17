@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: relay-attendance
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    disk:
+      name: attendance-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: ADMIN_EMAIL
+        value: hemanathanarish0@gmail.com
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_PATH
+        value: /var/data/attendance.sqlite3
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: HOST
+        value: 0.0.0.0
+      - key: FLASK_DEBUG
+        value: "false"
